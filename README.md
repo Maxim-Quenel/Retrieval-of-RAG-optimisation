@@ -52,7 +52,7 @@ Comparaison des temps de réponse (latence) pour chaque méthode de recherche, i
 ### Temps d'exécution Global (Pipeline)
 Vue d'ensemble des temps d'exécution globaux lors du processus d'évaluation.
 
-![Temps par Modèle](Etude result/plots/time_taken_model.png)
+![Temps par Modèle](Retrieval-of-RAG-optimisation/Etude result/plots/time_taken_model.png)
 
 ## 🛠️ Technologies Utilisées
 
