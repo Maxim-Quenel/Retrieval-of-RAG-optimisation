@@ -42,7 +42,7 @@ Analyse de l'évolution du Recall et du NDCG en fonction du nombre de documents 
 ### Impact du paramètre K dans l'algorithme RRF
 Étude de l'influence de la constante K de l'algorithme Reciprocal Rank Fusion sur la qualité globale des résultats hybrides.
 
-![Impact RRF K](RAG_Project/Etude%20result/plots/rrf_k_impact.png)
+![Impact RRF K]("RAG_Project/Etude% result/plots/rrf_k_impact.png")
 
 ### Temps d'exécution par Méthode
 Comparaison des temps de réponse (latence) pour chaque méthode de recherche, illustrant le compromis entre précision et coût computationnel (notamment pour le Cross-Encoder).
