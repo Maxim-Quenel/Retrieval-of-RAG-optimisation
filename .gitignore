@@ -1,0 +1,18 @@
+# Environnements virtuels
+venv/
+.env/
+env/
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+
+# BDD & Index
+chroma_db/
+sparse_index.json
+
+# Fichiers de log ou config locaux si applicables
+*.log
+.DS_Store

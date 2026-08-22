@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIA-RAG Multi-Level Retrieval</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="description" content="Research project on RAG Multi-level retrieval using BGE-M3 and Chroma DB.">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>Nexus<span>RAG</span></h1>
+            </div>
+            <p class="subtitle">Multi-Level Retrieval Orchestration (Dense, Sparse, RRF)</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Sidebar: Controls & Settings -->
+            <aside class="sidebar">
+                <section class="card settings-card">
+                    <h2><i class="icon-database"></i> Indexation</h2>
+                    <p class="desc">Vectorisez le dataset PIAF avec BGE-M3 (ChromaDB + Index Lexical).</p>
+                    
+                    <div class="form-group">
+                        <label for="data-source">Source de données</label>
+                        <select id="data-source" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--card-bg); color: var(--text-color); margin-top: 0.5rem;">
+                            <option value="wikipedia">Wikipédia (dossier data-wikipedia)</option>
+                            <option value="piaf">Dataset PIAF (piaf-v1.2.json)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label for="chunk-size">Taille de chunk (tokens)</label>
+                        <input type="number" id="chunk-size" value="256" min="10" max="4000">
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label for="chunk-overlap">Chevauchement (tokens)</label>
+                        <input type="number" id="chunk-overlap" value="50" min="0" max="1000">
+                    </div>
+                    <button id="btn-reindex" class="btn btn-primary">
+                        <span class="btn-text">Tout Re-vectoriser</span>
+                        <div class="loader hidden" id="reindex-loader"></div>
+                    </button>
+                    <div id="reindex-status" class="status-msg"></div>
+                </section>
+
+                <section class="card eval-card">
+                    <h2><i class="icon-chart"></i> Pipeline d'Évaluation</h2>
+                    <p class="desc">Calculez Recall@K et NDCG@10 sur le set QA.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eval-top-k">Top K (Éval)<br><small style="font-weight: 300; opacity: 0.8;">ex: 5,10,20</small></label>
+                            <input type="text" id="eval-top-k" value="5, 10">
+                        </div>
+                        <div class="form-group">
+                            <label for="eval-rrf-k">RRF K param<br><small style="font-weight: 300; opacity: 0.8;">ex: 30,60</small></label>
+                            <input type="text" id="eval-rrf-k" value="60">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eval-num-questions">Nb questions (Aléatoire, vide = toutes)</label>
+                        <input type="number" id="eval-num-questions" placeholder="Toutes" min="1">
+                    </div>
+                    
+                    <button id="btn-evaluate" class="btn btn-secondary">
+                        <span class="btn-text">Lancer l'Évaluation Automatique</span>
+                        <div class="loader hidden" id="eval-loader"></div>
+                    </button>
+                    <button id="btn-pause" class="btn btn-primary hidden" style="margin-top: 10px; background-color: #f59e0b; border-color: #f59e0b; transition: all 0.3s ease;">
+                        <span class="btn-text">Mettre en pause</span>
+                    </button>
+                    <div id="eval-progress-container" class="hidden" style="margin-top: 1rem;">
+                        <p id="eval-status-text" style="font-size: 0.9rem; margin-bottom: 0.5rem;">Statut : En cours...</p>
+                        <div style="width: 100%; background: var(--border-color); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div id="eval-progress-bar" style="width: 0%; height: 100%; background: var(--primary-color); transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card upload-card">
+                    <h2><i class="icon-chart"></i> Importer un CSV</h2>
+                    <p class="desc">Visualisez les résultats d'une ancienne évaluation.</p>
+                    
+                    <div class="form-group">
+                        <input type="file" id="csv-file" accept=".csv" style="width: 100%; padding: 0.5rem; background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    
+                    <button id="btn-upload-csv" class="btn btn-secondary" style="margin-top: 10px;">
+                        <span class="btn-text">Charger et Visualiser</span>
+                    </button>
+                </section>
+            </aside>
+
+            <!-- Search Area -->
+            <section class="search-section">
+                
+                <div class="eval-results hidden" id="eval-results-container">
+                    <h3>Résultats d'évaluation</h3>
+                    <div class="eval-layout">
+                        <div class="eval-tables" style="width: 100%;">
+                            <h4>Méthode 1 : Texte normal (Sans Titre)</h4>
+                            <div class="eval-table-wrapper" style="overflow-x: auto; margin-bottom: 2rem;">
+                                <table class="results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Top K</th>
+                                            <th>RRF K</th>
+                                            <th>Dense (Rec/NDCG/MRR)</th>
+                                            <th>Sparse (Rec/NDCG/MRR)</th>
+                                            <th>RRF (Rec/NDCG/MRR)</th>
+                                            <th>ColBERT (Rec/NDCG/MRR)</th>
+                                            <th>CrossEncoder (Rec/NDCG/MRR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eval-results-body-default">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4>Méthode 2 : Enrichi (Avec Titre)</h4>
+                            <div class="eval-table-wrapper" style="overflow-x: auto;">
+                                <table class="results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Top K</th>
+                                            <th>RRF K</th>
+                                            <th>Dense (Rec/NDCG/MRR)</th>
+                                            <th>Sparse (Rec/NDCG/MRR)</th>
+                                            <th>RRF (Rec/NDCG/MRR)</th>
+                                            <th>ColBERT (Rec/NDCG/MRR)</th>
+                                            <th>CrossEncoder (Rec/NDCG/MRR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eval-results-body-titles">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4>Méthode 3 : Chunks Adjacents</h4>
+                            <div class="eval-table-wrapper" style="overflow-x: auto;">
+                                <table class="results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Top K</th>
+                                            <th>RRF K</th>
+                                            <th>Dense (Rec/NDCG/MRR)</th>
+                                            <th>Sparse (Rec/NDCG/MRR)</th>
+                                            <th>RRF (Rec/NDCG/MRR)</th>
+                                            <th>ColBERT (Rec/NDCG/MRR)</th>
+                                            <th>CrossEncoder (Rec/NDCG/MRR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eval-results-body-adjacent">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="eval-charts">
+                            <div class="chart-container">
+                                <canvas id="recallChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="ndcgChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="mrrChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-bar-container">
+                    <input type="text" id="search-input" placeholder="Posez une question (ex: Quel est le sport le plus populaire en France ?)">
+                    <button id="btn-search" class="btn-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </div>
+                
+                <div class="search-filters">
+                    <div class="form-group row">
+                        <label for="search-top-k">Top K</label>
+                        <input type="number" id="search-top-k" value="5" min="1">
+                    </div>
+                    <div class="form-group row">
+                        <label for="search-rrf-k">RRF K</label>
+                        <input type="number" id="search-rrf-k" value="60" min="1">
+                    </div>
+                </div>
+
+                <div class="results-grid hidden" id="results-container">
+                    <!-- Dense Results -->
+                    <div class="result-column" id="col-dense">
+                        <div class="col-header">
+                            <div class="col-icon dense-icon"></div>
+                            <h3>Top K Dense</h3>
+                        </div>
+                        <div class="chunk-list" id="list-dense"></div>
+                    </div>
+                    
+                    <!-- Sparse Results -->
+                    <div class="result-column" id="col-sparse">
+                        <div class="col-header">
+                            <div class="col-icon sparse-icon"></div>
+                            <h3>Top K Sparse (Lexical)</h3>
+                        </div>
+                        <div class="chunk-list" id="list-sparse"></div>
+                    </div>
+                    
+                    <!-- RRF Results -->
+                    <div class="result-column highlight-col" id="col-rrf">
+                        <div class="col-header">
+                            <div class="col-icon rrf-icon"></div>
+                            <h3>Fusion RRF</h3>
+                        </div>
+                        <div class="chunk-list" id="list-rrf"></div>
+                    </div>
+                </div>
+                
+                <div id="search-loader" class="loader-container hidden">
+                    <div class="spinner"></div>
+                    <p>Recherche en cours...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Chart Modal -->
+    <div id="chart-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <div class="modal-chart-container">
+                <canvas id="modalChart"></canvas>
+            </div>
+            <p class="zoom-hint">Utilisez la molette de la souris pour zoomer, et cliquez-glissez pour vous déplacer.</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
