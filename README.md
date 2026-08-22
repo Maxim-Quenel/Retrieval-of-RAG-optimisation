@@ -41,7 +41,7 @@ Analyse de l'évolution du Recall et du NDCG en fonction du nombre de documents 
 ### Impact du paramètre K dans l'algorithme RRF
 Étude de l'influence de la constante K de l'algorithme Reciprocal Rank Fusion sur la qualité globale des résultats hybrides.
 
-![Impact RRF K](Etude%20result/plots/rrf_k_impact.png")
+![Impact RRF K](Etude%20result/plots/rrf_k_impact.png)
 
 
 ### Temps d'exécution Global (Pipeline)
