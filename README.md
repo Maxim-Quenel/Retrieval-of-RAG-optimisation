@@ -1,6 +1,6 @@
-# NexusRAG : Système Avancé de RAG et de Recherche Sémantique Multi-Niveaux
+# Système Avancé de RAG et de Recherche Sémantique Multi-Niveaux
 
-Bienvenue dans le projet **NexusRAG**, un système performant de Recherche d'Information et de RAG (Retrieval-Augmented Generation). Ce projet a pour but d'indexer de grands corpus documentaires (comme Wikipédia ou le dataset francophone PIAF) et de fournir une interface d'évaluation pour différentes stratégies de vectorisation et de récupération (Retrieval).
+Bienvenue dans le projet **RAG**, un système performant de Recherche d'Information et de RAG (Retrieval-Augmented Generation). Ce projet a pour but d'indexer de grands corpus documentaires (comme Wikipédia ou le dataset francophone PIAF) et de fournir une interface d'évaluation pour différentes stratégies de vectorisation et de récupération (Retrieval).
 
 ## 🚀 Fonctionnalités Principales
 
@@ -59,4 +59,4 @@ Comparaison des temps de réponse (latence) pour chaque méthode de recherche, i
 
 ## 📝 Conclusion de l'Analyse
 
-Le projet NexusRAG se présente comme un banc d'essai exhaustif et moderne pour l'étude des systèmes RAG. En couplant une interface utilisateur fluide pour la recherche visuelle à un pipeline d'évaluation scientifique rigoureux (multi-modèles et multi-métriques), il permet de déterminer avec précision l'architecture offrant le meilleur équilibre entre vitesse de traitement, coût computationnel, et pertinence des résultats.
+Le projet RAG se présente comme un banc d'essai exhaustif et moderne pour l'étude des systèmes RAG. En couplant une interface utilisateur fluide pour la recherche visuelle à un pipeline d'évaluation scientifique rigoureux (multi-modèles et multi-métriques), il permet de déterminer avec précision l'architecture offrant le meilleur équilibre entre vitesse de traitement, coût computationnel, et pertinence des résultats.
