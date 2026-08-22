@@ -32,8 +32,7 @@ Le dossier `RAG_Project/Etude result/plots/` contient les visualisations issues 
 ### Comparaison des Méthodes de Retrieval
 Ce graphique met en évidence les performances (Recall et NDCG) des différentes stratégies de recherche : Dense, Sparse, Hybride (RRF), ColBERT et Cross-Encoder.
 
-![Comparaison des Méthodes](RAG_Project/Etude%20result/plots/method_comparison.png)
-
+![Comparaison des Méthodes](Etude%20result/plots/method_comparison.png)
 ### Performance en fonction du Top-K
 Analyse de l'évolution du Recall et du NDCG en fonction du nombre de documents récupérés (K) pour les différentes méthodes.
 
