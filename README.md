@@ -36,22 +36,22 @@ Ce graphique met en évidence les performances (Recall et NDCG) des différentes
 ### Performance en fonction du Top-K
 Analyse de l'évolution du Recall et du NDCG en fonction du nombre de documents récupérés (K) pour les différentes méthodes.
 
-![Performance vs Top K](RAG_Project/Etude%20result/plots/performance_vs_top_k.png)
+![Performance vs Top K](Etude%20result/plots/performance_vs_top_k.png)
 
 ### Impact du paramètre K dans l'algorithme RRF
 Étude de l'influence de la constante K de l'algorithme Reciprocal Rank Fusion sur la qualité globale des résultats hybrides.
 
-![Impact RRF K]("RAG_Project/Etude% result/plots/rrf_k_impact.png")
+![Impact RRF K](Etude%20result/plots/rrf_k_impact.png")
 
 ### Temps d'exécution par Méthode
 Comparaison des temps de réponse (latence) pour chaque méthode de recherche, illustrant le compromis entre précision et coût computationnel (notamment pour le Cross-Encoder).
 
-![Temps par Méthode](RAG_Project/Etude%20result/plots/time_taken_method.png)
+![Temps par Méthode](Etude%20result/plots/time_taken_method.png)
 
 ### Temps d'exécution Global (Pipeline)
 Vue d'ensemble des temps d'exécution globaux lors du processus d'évaluation.
 
-![Temps par Modèle](Retrieval-of-RAG-optimisation/Etude result/plots/time_taken_model.png)
+![Temps par Modèle](Etude%20result/plots/time_taken_model.png)
 
 ## 🛠️ Technologies Utilisées
 
