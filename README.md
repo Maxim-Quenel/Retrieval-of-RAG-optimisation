@@ -43,13 +43,9 @@ Analyse de l'évolution du Recall et du NDCG en fonction du nombre de documents 
 
 ![Impact RRF K](Etude%20result/plots/rrf_k_impact.png")
 
-### Temps d'exécution par Méthode
-Comparaison des temps de réponse (latence) pour chaque méthode de recherche, illustrant le compromis entre précision et coût computationnel (notamment pour le Cross-Encoder).
-
-![Temps par Méthode](Etude%20result/plots/time_taken_method.png)
 
 ### Temps d'exécution Global (Pipeline)
-Vue d'ensemble des temps d'exécution globaux lors du processus d'évaluation.
+Comparaison des temps de réponse (latence) pour chaque méthode de recherche, illustrant le compromis entre précision et coût computationnel (notamment pour le Cross-Encoder).
 
 ![Temps par Modèle](Etude%20result/plots/time_taken_model.png)
 
